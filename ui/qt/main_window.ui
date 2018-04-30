@@ -172,6 +172,7 @@
      <addaction name="actionFileExportAsPlainText"/>
      <addaction name="actionFileExportAsCSV"/>
      <addaction name="actionFileExportAsCArrays"/>
+     <addaction name="actionFileExportAsRustArrays"/>
      <addaction name="separator"/>
      <addaction name="actionFileExportAsPSML"/>
      <addaction name="actionFileExportAsPDML"/>
@@ -1287,6 +1288,11 @@
   <action name="actionFileExportAsCArrays">
    <property name="text">
     <string>As &quot;C&quot; Arrays…</string>
+   </property>
+  </action>
+  <action name="actionFileExportAsRustArrays">
+   <property name="text">
+    <string>As &quot;Rust&quot; Arrays…</string>
    </property>
   </action>
   <action name="actionFileExportAsPSML">

@@ -2727,6 +2727,67 @@ cf_write_csv_packets(capture_file *cf, print_args_t *print_args)
 }
 
 static gboolean
+rustarrays_write_packet(capture_file *cf, frame_data *fdata, wtap_rec *rec,
+                        const guint8 *pd, void *argsp)
+{
+  write_packet_callback_args_t *args = (write_packet_callback_args_t *)argsp;
+
+  epan_dissect_run(&args->edt, cf->cd_t, rec,
+                   frame_tvbuff_new(&cf->provider, fdata, pd), fdata, NULL);
+  write_rustarrays_hex_data(fdata->num, args->fh, &args->edt);
+  epan_dissect_reset(&args->edt);
+
+  return !ferror(args->fh);
+}
+
+cf_print_status_t
+cf_write_rustarrays_packets(capture_file *cf, print_args_t *print_args)
+{
+  write_packet_callback_args_t callback_args;
+  FILE         *fh;
+  psp_return_t  ret;
+
+  fh = ws_fopen(print_args->file, "w");
+
+  if (fh == NULL)
+    return CF_PRINT_OPEN_ERROR; /* attempt to open destination failed */
+
+  if (ferror(fh)) {
+    fclose(fh);
+    return CF_PRINT_WRITE_ERROR;
+  }
+
+  callback_args.fh = fh;
+  callback_args.print_args = print_args;
+  epan_dissect_init(&callback_args.edt, cf->epan, TRUE, TRUE);
+
+  /* Iterate through the list of packets, printing the packets we were
+     told to print. */
+  ret = process_specified_records(cf, &print_args->range,
+                                  "Writing Rust Arrays",
+                                  "selected packets", TRUE,
+                                  rustarrays_write_packet, &callback_args, TRUE);
+
+  epan_dissect_cleanup(&callback_args.edt);
+
+  switch (ret) {
+  case PSP_FINISHED:
+    /* Completed successfully. */
+    break;
+  case PSP_STOPPED:
+    /* Well, the user decided to abort the printing. */
+    break;
+  case PSP_FAILED:
+    /* Error while printing. */
+    fclose(fh);
+    return CF_PRINT_WRITE_ERROR;
+  }
+
+  fclose(fh);
+  return CF_PRINT_OK;
+}
+
+static gboolean
 carrays_write_packet(capture_file *cf, frame_data *fdata, wtap_rec *rec,
                      const guint8 *pd, void *argsp)
 {
@@ -2786,6 +2847,8 @@ cf_write_carrays_packets(capture_file *cf, print_args_t *print_args)
   fclose(fh);
   return CF_PRINT_OK;
 }
+
+
 
 static gboolean
 write_json_packet(capture_file *cf, frame_data *fdata, wtap_rec *rec,

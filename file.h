@@ -462,6 +462,15 @@ cf_print_status_t cf_write_psml_packets(capture_file *cf, print_args_t *print_ar
 cf_print_status_t cf_write_csv_packets(capture_file *cf, print_args_t *print_args);
 
 /**
+ * Print (export) the capture file into Rust Arrays format.
+ *
+ * @param cf the capture file
+ * @param print_args the arguments what and how to export
+ * @return one of cf_print_status_t
+ */
+cf_print_status_t cf_write_rustarrays_packets(capture_file *cf, print_args_t *print_args);
+
+/**
  * Print (export) the capture file into C Arrays format.
  *
  * @param cf the capture file
