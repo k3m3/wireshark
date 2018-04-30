@@ -119,6 +119,7 @@ WS_DLL_PUBLIC void write_csv_column_titles(column_info *cinfo, FILE *fh);
 WS_DLL_PUBLIC void write_csv_columns(epan_dissect_t *edt, FILE *fh);
 
 WS_DLL_PUBLIC void write_carrays_hex_data(guint32 num, FILE *fh, epan_dissect_t *edt);
+WS_DLL_PUBLIC void write_rustarrays_hex_data(guint32 num, FILE *fh, epan_dissect_t *edt);
 
 WS_DLL_PUBLIC void write_fields_preamble(output_fields_t* fields, FILE *fh);
 WS_DLL_PUBLIC void write_fields_proto_tree(output_fields_t* fields, epan_dissect_t *edt, column_info *cinfo, FILE *fh);

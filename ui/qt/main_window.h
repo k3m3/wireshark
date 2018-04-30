@@ -441,6 +441,7 @@ private slots:
     // We're dropping PostScript exports
     void on_actionFileExportAsCSV_triggered();
     void on_actionFileExportAsCArrays_triggered();
+    void on_actionFileExportAsRustArrays_triggered();
     void on_actionFileExportAsPSML_triggered();
     void on_actionFileExportAsPDML_triggered();
     void on_actionFileExportAsJSON_triggered();

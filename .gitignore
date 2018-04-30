@@ -193,4 +193,4 @@ packaging/portableapps/appinfo.ini
 packaging/rpm/SPECS/wireshark.spec
 vgcore.*
 Wireshark.*
-.pytest_cache/
+build/*

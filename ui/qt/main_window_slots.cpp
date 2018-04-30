@@ -1966,6 +1966,11 @@ void MainWindow::on_actionFileExportAsCArrays_triggered()
     exportDissections(export_type_carrays);
 }
 
+void MainWindow::on_actionFileExportAsRustArrays_triggered()
+{
+    exportDissections(export_type_rustarrays);
+}
+
 void MainWindow::on_actionFileExportAsPSML_triggered()
 {
     exportDissections(export_type_psml);

@@ -1719,6 +1719,68 @@ write_carrays_hex_data(guint32 num, FILE *fh, epan_dissect_t *edt)
     }
 }
 
+void write_rustarrays_hex_data(guint32 num, FILE *fh, epan_dissect_t *edt)
+{
+    guint32       i = 0, src_num = 0;
+    GSList       *src_le;
+    tvbuff_t     *tvb;
+    char         *name;
+    const guchar *cp;
+    guint         length;
+    char          ascii[9];
+    struct data_source *src;
+
+    for (src_le = edt->pi.data_src; src_le != NULL; src_le = src_le->next) {
+        memset(ascii, 0, sizeof(ascii));
+        src = (struct data_source *)src_le->data;
+        tvb = get_data_source_tvb(src);
+        length = tvb_captured_length(tvb);
+        if (length == 0)
+            continue;
+
+        cp = tvb_get_ptr(tvb, 0, length);
+
+        name = get_data_source_name(src);
+        if (name) {
+            fprintf(fh, "/* %s */\n", name);
+            wmem_free(NULL, name);
+        }
+        if (src_num) {
+            fprintf(fh, "static PKT%u_%u: &'static [u8] = &[\n",
+                    num, src_num);
+        } else {
+            fprintf(fh, "static PKT%u: &'static [u8] = &[\n",
+                    num);
+        }
+        src_num++;
+
+        for (i = 0; i < length; i++) {
+            fprintf(fh, "0x%02x", *(cp + i));
+            ascii[i % 8] = g_ascii_isprint(*(cp + i)) ? *(cp + i) : '.';
+
+            if (i == (length - 1)) {
+                guint rem;
+                rem = length % 8;
+                if (rem) {
+                    guint j;
+                    for ( j = 0; j < 8 - rem; j++ )
+                        fprintf(fh, "      ");
+                }
+                fprintf(fh, "  /* %s */\n];\n\n", ascii);
+                break;
+            }
+
+            if (!((i + 1) % 8)) {
+                fprintf(fh, ", /* %s */\n", ascii);
+                memset(ascii, 0, sizeof(ascii));
+            }
+            else {
+                fprintf(fh, ", ");
+            }
+        }
+    }
+}
+
 /*
  * Find the data source for a specified field, and return a pointer
  * to the data in it. Returns NULL if the data is out of bounds.
